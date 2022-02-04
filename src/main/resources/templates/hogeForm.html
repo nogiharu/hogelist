@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hoge List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+</head>
+<body>
+    <div th:replace="fragments :: msg_area"></div>
+    <form th:action="@{/}" method="post" th:object="${hogeData}">
+        <table>
+            <tr>
+                <th>id</th>
+                <td>
+                    <span th:text="*{id}"></span>
+                    <input type="hidden" th:field="*{id}">
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.name}"></th>
+                <td>
+                    <input type="text" th:field="*{name}" size="40">
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" th:errorclass="red"></div>
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.gender}"></th>
+                <td>
+                    <select name="gender">
+                        <option value="" th:field="*{gender}" th:text="#{option.none}"></option>
+                        <option value="男" th:field="*{gender}" th:text="#{option.man}"></option>
+                        <option value="女" th:field="*{gender}" th:text="#{option.woman}"></option>
+                        <option value="その他" th:field="*{gender}" th:text="#{option.other}"></option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" th:errorclass="red"></div>
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.birthday}"></th>
+                <td>
+                    <input type="text" th:field="*{birthday}" placeholder="yyyy-mm-dd">
+                    <div th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}" th:errorclass="red"></div>
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.registrationDate}"></th>
+                <td>
+                    <input type="text" th:field="*{registrationDate}" placeholder="yyyy-mm-dd">
+                    <div th:if="${#fields.hasErrors('registrationDate')}" th:errors="*{registrationDate}"
+                        th:errorclass="red"></div>
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.eat}"></th>
+                <td>
+                    <input type="radio" value="1" th:field="*{eat}" th:text="#{radio.eat}"><br>
+                    <input type="radio" value="0" th:field="*{eat}" th:text="#{radio.notEat}">
+                    <div th:if="${#fields.hasErrors('eat')}" th:errors="*{eat}" th:errorclass="red"></div>
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.vegetableLike}"></th>
+                <td>
+                    <input type="checkbox" name="vegetableLike" value="Y" th:text="#{radio.like}">
+                    <input type="hidden" name="!vegetableLike" value="N">
+                </td>
+            </tr>
+            <tr>
+                <th th:text="#{label.hobby}"></th>
+                <td>
+                    <textarea th:field="*{hobby}" cols="50" rows="10"></textarea>
+                </td>
+            </tr>
+        </table>
+        <div th:unless="${session.mode == 'update'}">
+            <button type="submit" th:formaction="@{/hoge/create}" th:text="#{button.add}"></button>
+            <button type="submit" th:formaction="@{/hoge/cancel}" th:text="#{button.cancel}"></button>
+        </div>
+        <div th:if="${session.mode == 'update'}">
+            <button type="submit" th:formaction="@{/hoge/update}" th:text="#{button.update}"></button>
+            <button type="submit" th:formaction="@{/hoge/delete}" th:text="#{button.delete}"></button>
+            <button type="submit" th:formaction="@{/hoge/cancel}" th:text="#{button.cancel}"></button>
+        </div>
+    </form>
+</body>
+
+</html>

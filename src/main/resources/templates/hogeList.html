@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hoge List</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css">
+</head>
+${#locale.language}=<span th:text="${#locale.language}"></span>
+<body>
+    <div th:replace="fragments :: msg_area"></div>
+    <form method="post" th:object="${hogeQuery}">
+        <div style="display: flex">
+            <table border="1">
+                <tr>
+                    <th th:text="#{label.name}"></th>
+                    <th th:text="#{label.age}"></th>
+                    <th th:text="#{label.gender}"></th>
+                    <th th:text="#{label.birthday}"></th>
+                    <th th:text="#{label.registrationDate}"></th>
+                    <th th:text="#{label.eat}"></th>
+                    <th th:text="#{label.vegetableLike}"></th>
+                    <th th:text="#{label.hobby}"></th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" th:field="*{name}" size="10">
+                    </td>
+                    <td>
+                        <input type="number" th:field="*{age}" size="3">
+                    </td>
+                    <td>
+                        <select name="gender">
+                            <option value="" th:field="*{gender}" th:text="#{option.none}"></option>
+                            <option value="男" th:field="*{gender}" th:text="#{option.man}"></option>
+                            <option value="女" th:field="*{gender}" th:text="#{option.woman}"></option>
+                            <option value="その他" th:field="*{gender}" th:text="#{option.other}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" th:field="*{birthdayFrom}" placeholder="yyyy-mm-dd">
+                        <div th:if="${#fields.hasErrors('birthdayFrom')}" th:errors="*{birthdayFrom}"
+                            th:errorclass="red">
+                        </div>
+                        ～
+                        <input type="text" th:field="*{birthdayTo}" placeholder="yyyy-mm-dd">
+                        <div th:if="${#fields.hasErrors('birthdayTo')}" th:errors="*{birthdayTo}" th:errorclass="red">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" th:field="*{registrationDateFrom}" placeholder="yyyy-mm-dd">
+
+                        ～
+                        <input type="text" th:field="*{registrationDateTo}" placeholder="yyyy-mm-dd">
+
+                    </td>
+                    <td>
+                        <input type="radio" value="1" th:field="*{eat}" th:text="#{radio.eat}"><br>
+                        <input type="radio" value="0" th:field="*{eat}" th:text="#{radio.notEat}">
+                    </td>
+                    <td>
+                        <input type="radio" th:field="*{vegetableLike}" value="Y" th:text="#{radio.like}"><br>
+                        <input type="radio" th:field="*{vegetableLike}" value="N" th:text="#{radio.disLike}">
+                    </td>
+                    <td>
+                        <textarea th:field="*{hobby}" cols="10" rows="10"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" th:formaction="@{/hoge/query}" th:text="#{button.query}"></button>
+        </div>
+        <div th:if="${#fields.hasErrors('registrationDateFrom')}" th:errors="*{registrationDateFrom}"
+            th:errorclass="red">
+        </div>
+        <div th:if="${#fields.hasErrors('registrationDateTo')}" th:errors="*{registrationDateTo}" th:errorclass="red">
+        </div>
+    </form>
+    <hr>
+    <form method="get">
+        <button type="submit" th:formaction="@{/hoge/create}" th:text="#{button.new}"></button>
+        <button type="submit" th:formaction="@{/hoge}" th:text="#{button.allQuery}"></button>
+    </form>
+    <table border="2">
+        <tr>
+            <th>★id★</th>
+            <th th:text="#{label.name}"></th>
+            <th th:text="#{label.age}"></th>
+            <th th:text="#{label.gender}"></th>
+            <th th:text="#{label.birthday}"></th>
+            <th th:text="#{label.registrationDate}"></th>
+            <th th:text="#{label.eat}"></th>
+            <th th:text="#{label.vegetableLike}"></th>
+            <th th:text="#{label.hobby}"></th>
+        </tr>
+        <tr th:each="hoge : ${hogeList}">
+            <td th:text="${hoge.id}"></td>
+            <td><a th:href="@{/hoge/__${hoge.id}__}" th:text="${hoge.name}"></a></td>
+            <td th:text="${hoge.age}"></td>
+            <td th:text="${hoge.gender}"></td>
+            <td th:text="${hoge.birthday}"></td>
+            <td th:text="${hoge.registrationDate}"></td>
+            <td th:text="${hoge.eat == 1 ? '__#{radio.eat}__':'__#{radio.notEat}__'}"></td>
+            <td th:text="${hoge.vegetableLike == 'Y' ? '__#{radio.like}__':'__#{radio.disLike}__'}"></td>
+            <td th:text="${hoge.hobby}"></td>
+        </tr>
+    </table>
+    <div th:if="${hogeList != null && hogeList.getTotalPages !=0}" th:object="${hogeList}">
+        <span th:text="#{text.paging(*{getNumber +1},*{getTotalPages})}"></span>
+        <ul id="nav">
+            <li>
+                <span th:if="*{isFirst}" th:text="#{link.prev}"></span>
+                <a th:unless="*{isFirst}" th:href="@{/hoge/query(page = *{getNumber -1})}" th:text="#{link.prev}"></a>
+            </li>
+            <li th:each="h : *{#numbers.sequence(getNumber -2 > 0 ? getNumber -2 : 0,
+                getNumber +2 > getTotalPages -1 ? getTotalPages -1 : getNumber +2)}">
+                <span th:if="${h} == *{getNumber}" th:text="${h + 1}"></span>
+                <a th:unless="${h} == *{getNumber}" th:href="@{/hoge/query(page = ${h})}" th:text="${h + 1}"></a>
+            </li>
+            <li>
+                <span th:if="*{isLast}" th:text="#{link.next}"></span>
+                <a th:unless="*{isLast}" th:href="@{/hoge/query(page = *{getNumber + 1})}" th:text="#{link.next}"></a>
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>
